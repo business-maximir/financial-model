@@ -134,6 +134,12 @@ const App=(()=>{
   const cityById=id=>cities().find(c=>c.id===id)||null;
   const adminCityById=id=>allCities().find(c=>c.id===id)||null;
   const states=()=>[...new Set(cities().map(c=>c.state))].sort((a,b)=>a.localeCompare(b,'en-US'));
+  const localizedCityName=city=>Localization.getLanguage()==='fa-IR'?(city?.cityFa||city?.city||''):(city?.city||'');
+  const localizedStateName=cityOrState=>{
+    const city=typeof cityOrState==='string'?cities().find(c=>c.state===cityOrState):cityOrState;
+    const fallback=typeof cityOrState==='string'?cityOrState:(cityOrState?.state||'');
+    return Localization.getLanguage()==='fa-IR'?(city?.stateFa||fallback):fallback;
+  };
 
   function fallbackCredentialHash(value){
     let hash=0x811c9dc5;
@@ -855,7 +861,7 @@ const App=(()=>{
     const topbar=document.getElementById('topbarCityMeta');
     const c=cityById(state.selectedCityId);
     const effectiveInvestment=state.activeScenario?.assumptions?.initialInvestment??c?.initialPayment??0;
-    const html=c ? `<div class="city-chip"><strong>${Localization.t('selectedCity')}:</strong> ${escapeCityHtml(c.city)}, ${escapeCityHtml(c.state)}</div><div class="city-chip"><strong>${Localization.t('populationHeader')}:</strong> ${fmtNumber(c.population)}</div><div class="city-chip"><strong>${Localization.t('initialPaymentHeader')}:</strong> ${fmtBRL(effectiveInvestment)}</div>` : '';
+    const html=c ? `<div class="city-chip"><strong>${Localization.t('selectedCity')}:</strong> ${escapeCityHtml(localizedCityName(c))}, ${escapeCityHtml(localizedStateName(c))}</div><div class="city-chip"><strong>${Localization.t('populationHeader')}:</strong> ${fmtNumber(c.population)}</div><div class="city-chip"><strong>${Localization.t('initialPaymentHeader')}:</strong> ${fmtBRL(effectiveInvestment)}</div>` : '';
     if(box) box.innerHTML=html;
     if(topbar) topbar.innerHTML='';
   }
@@ -891,16 +897,16 @@ const App=(()=>{
     const statePlaceholder=Localization.t('selectProvincePlaceholder');
     const cityFirstPlaceholder=Localization.t('selectKecamatanFirstPlaceholder');
     const cityPlaceholder=Localization.t('selectKecamatanPlaceholder');
-    stateSelect.innerHTML=`<option value="">${statePlaceholder}</option>`+st.map(x=>`<option value="${escapeCityHtml(x)}" ${x===startFilterState?'selected':''}>${escapeCityHtml(x)}</option>`).join('');
+    stateSelect.innerHTML=`<option value="">${statePlaceholder}</option>`+st.map(x=>`<option value="${escapeCityHtml(x)}" ${x===startFilterState?'selected':''}>${escapeCityHtml(localizedStateName(x))}</option>`).join('');
     const filtered=startFilterState ? cities().filter(c=>c.state===startFilterState) : cities();
     citySelect.disabled=!startFilterState;
     citySelect.innerHTML=startFilterState
-      ? `<option value="">${cityPlaceholder}</option>`+filtered.map(c=>`<option value="${escapeCityHtml(c.id)}" ${c.id===startFilterCityId?'selected':''}>${escapeCityHtml(c.city)}</option>`).join('')
+      ? `<option value="">${cityPlaceholder}</option>`+filtered.map(c=>`<option value="${escapeCityHtml(c.id)}" ${c.id===startFilterCityId?'selected':''}>${escapeCityHtml(localizedCityName(c))}</option>`).join('')
       : `<option value="">${cityFirstPlaceholder}</option>`;
     const calculateBtn=document.getElementById('startCalculateBtn');
     if(calculateBtn)calculateBtn.disabled=!startFilterCityId;
     const table=document.getElementById('cityTable');
-    const rows=filtered.map(c=>`<tr data-city-row="${escapeCityHtml(c.id)}" class="${c.id===startFilterCityId?'selected':''}"><td>${escapeCityHtml(c.state)}</td><td>${escapeCityHtml(c.city)}</td><td>${fmtNumber(c.population)}</td><td>${fmtBRL(c.initialPayment)}</td></tr>`).join('');
+    const rows=filtered.map(c=>`<tr data-city-row="${escapeCityHtml(c.id)}" class="${c.id===startFilterCityId?'selected':''}"><td>${escapeCityHtml(localizedStateName(c))}</td><td>${escapeCityHtml(localizedCityName(c))}</td><td>${fmtNumber(c.population)}</td><td>${fmtBRL(c.initialPayment)}</td></tr>`).join('');
     table.innerHTML=`<thead><tr><th>${Localization.t('state')}</th><th>${Localization.t('city')}</th><th>${Localization.t('populationHeader')}</th><th>${Localization.t('initialPaymentHeader')}</th></tr></thead><tbody>${rows}</tbody>`;
     renderAdminUI();
   }
@@ -1044,11 +1050,11 @@ const App=(()=>{
     const statePlaceholder=Localization.t('selectProvincePlaceholder');
     const cityFirstPlaceholder=Localization.t('selectKecamatanFirstPlaceholder');
     const cityPlaceholder=Localization.t('selectKecamatanPlaceholder');
-    stateSelect.innerHTML=`<option value="">${statePlaceholder}</option>`+st.map(x=>`<option value="${escapeCityHtml(x)}" ${x===startFilterState?'selected':''}>${escapeCityHtml(x)}</option>`).join('');
+    stateSelect.innerHTML=`<option value="">${statePlaceholder}</option>`+st.map(x=>`<option value="${escapeCityHtml(x)}" ${x===startFilterState?'selected':''}>${escapeCityHtml(localizedStateName(x))}</option>`).join('');
     const filtered=startFilterState ? cities().filter(c=>c.state===startFilterState) : [];
     citySelect.disabled=!startFilterState;
     citySelect.innerHTML=startFilterState
-      ? `<option value="">${cityPlaceholder}</option>`+filtered.map(c=>`<option value="${escapeCityHtml(c.id)}" ${c.id===startFilterCityId?'selected':''}>${escapeCityHtml(c.city)}</option>`).join('')
+      ? `<option value="">${cityPlaceholder}</option>`+filtered.map(c=>`<option value="${escapeCityHtml(c.id)}" ${c.id===startFilterCityId?'selected':''}>${escapeCityHtml(localizedCityName(c))}</option>`).join('')
       : `<option value="">${cityFirstPlaceholder}</option>`;
     btn.disabled=!startFilterCityId;
     renderAdminUI();
@@ -1102,18 +1108,18 @@ const App=(()=>{
     const holder=document.getElementById('mobileKpiContent');
     if(!holder||!model)return;
     const c=cityById(state.selectedCityId);
-    const cityTitle=c?`${c.city}, ${c.state}`:'—';
+    const cityTitle=c?`${localizedCityName(c)}, ${localizedStateName(c)}`:'—';
     const pop=c?fmtNumber(c.population):'—';
     const pay=fmtBRL(model.summary.initialPayment||0);
     const paybackText=mobileMonthLabel(model.summary.paybackPeriod);
-    const monthlyBreakEven=model.summary.breakEvenPeriod?Localization.t('monthlyBreakEvenValue',{n:Math.round(Number(model.summary.breakEvenPeriod))}):Localization.t('notAchieved12');
+    const monthlyBreakEven=model.summary.breakEvenPeriod?Localization.t('monthlyBreakEvenValue',{n:Localization.localizeDigits(Math.round(Number(model.summary.breakEvenPeriod)))}):Localization.t('notAchieved12');
     const profitCompact=fmtBRLCompact(model.summary.netProfit);
     const cards=[
       {cls:'city',icon:'city',label:Localization.t('selectedCity'),value:cityTitle,sub:`${Localization.t('populationHeader')}: ${pop} · ${Localization.t('initialPaymentHeader')}: ${pay}`},
       {cls:'investment-editable',icon:'briefcase',label:Localization.t('initialInvestment'),value:fmtBRLCompact(model.summary.totalInvestment),sub:`${Localization.t('averageMonthlyInvestment')}: ${fmtBRLCompact((model.summary.totalMarketingInvestment||0)/12)}`},
       {icon:'target',label:Localization.t('breakEven'),value:paybackText,sub:`${Localization.t('monthlyEquilibrium')}: ${monthlyBreakEven}`},
       {icon:'profit',label:Localization.t('yearProfit'),value:profitCompact},
-      {icon:'roi',label:Localization.t('kpiMargin'),value:Math.round(model.summary.roi)+' %'}
+      {icon:'roi',label:Localization.t('kpiMargin'),value:Localization.localizeDigits(Math.round(model.summary.roi)+' %')}
     ];
     const cardHtml=cards.map(x=>{
       return `<div class="mobile-kpi-card ${x.cls||''}">${mobileKpiIcon(x.icon)}<div class="mobile-kpi-copy"><div class="mobile-kpi-label">${htmlEsc(x.label)}</div><div class="mobile-kpi-value">${htmlEsc(x.value)}</div>${x.sub?`<div class="mobile-kpi-sub">${htmlEsc(x.sub)}</div>`:''}</div></div>`;
@@ -1229,7 +1235,7 @@ const App=(()=>{
       ['paybackPeriod',model.summary.paybackPeriod?Localization.formatMonthDuration(model.summary.paybackPeriod):Localization.t('notAchieved12'),'','summary-positive-row']
     ];
     dst.innerHTML=rows.map(([key,val,type,cls])=>{
-      const value=typeof val==='number'?(type==='%'?Math.round(val)+' %':fmtBRL(val)):val;
+      const value=typeof val==='number'?(type==='%'?Localization.localizeDigits(Math.round(val)+' %'):fmtBRL(val)):val;
       return `<div class="summary-row ${cls||''}"><span>${htmlEsc(Localization.t(key))}</span><span>${htmlEsc(value)}</span></div>`;
     }).join('');
   }
@@ -1249,7 +1255,7 @@ const App=(()=>{
       let sectionHtml='';
       if(sectionCell){
         const sectionButton=sectionCell.querySelector('[data-model-detail]');
-        const sectionText=(sectionCell.querySelector('.section-text')?.textContent||sectionCell.textContent||'').replace(Localization.t('detailsLink'),'').replace(/\s*[,،]?\s*(?:(?:в|in)\s+)?IRT\.?\s*$/i,'').trim();
+        const sectionText=(sectionCell.querySelector('.section-text')?.textContent||sectionCell.textContent||'').replace(Localization.t('detailsLink'),'').replace(/\s*[,،]?\s*(?:(?:в|in)\s+)?(?:IRT|Toman|تومان)\.?\s*$/i,'').trim();
         const rowSpan=Math.max(1,Number(sectionCell.getAttribute('rowspan'))||1);
         const key=sectionButton?.dataset.modelDetail||'';
         const tone=['investment','operations','expenses','profit'].find(x=>sectionCell.classList.contains(x))||'investment';

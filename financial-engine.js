@@ -345,9 +345,10 @@ const FinancialEngine=(()=>{
     if(compact&&abs>=1000){const scaled=abs/1000,digits=scaled>=100||Number.isInteger(scaled)?0:1,unit=(typeof Localization!=='undefined')?Localization.t('thousandShort'):'тыс.';return sign+scaled.toLocaleString(locale,{minimumFractionDigits:0,maximumFractionDigits:digits})+' '+unit;}
     return sign+Math.round(abs).toLocaleString(locale);
   }
-  function formatCurrencyFull(v){return `${n(v)<0?'-':''}${formatMoney(Math.abs(n(v)),false)} IRT`}
-  function formatCurrencyCompact(v){return `${n(v)<0?'-':''}${formatMoney(Math.abs(n(v)),true)} IRT`}
-  function formatPercent(v){return `${Math.round(v)} %`}
+  function currencyLabel(){return (typeof Localization!=='undefined'&&Localization.getLanguage&&Localization.getLanguage()==='fa-IR')?'تومان':'Toman'}
+  function formatCurrencyFull(v){return `${n(v)<0?'-':''}${formatMoney(Math.abs(n(v)),false)} ${currencyLabel()}`}
+  function formatCurrencyCompact(v){return `${n(v)<0?'-':''}${formatMoney(Math.abs(n(v)),true)} ${currencyLabel()}`}
+  function formatPercent(v){const raw=`${Math.round(v)} %`;return (typeof Localization!=='undefined'&&Localization.localizeDigits)?Localization.localizeDigits(raw):raw}
   function createExpenseRow(name='New Expense',amount=0){return{id:uid(),name,amount,removable:true,showInModel:true}}
   function createRevenueRule(threshold=0,maximShare=100){return{id:uid(),threshold,maximShare,removable:true}}
   function applyPreset(assumptions,type,preset){const a=normalizeAssumptions(assumptions);if(type==='marketing'&&marketingPresets[preset]){a.marketingDistributionPreset=preset;a.marketingDistribution=clone(marketingPresets[preset])}if(type==='rides'&&ridesPresets[preset]){a.ridesDistributionPreset=preset;a.ridesDistribution=clone(ridesPresets[preset])}return a}

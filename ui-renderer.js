@@ -5,8 +5,8 @@ const UIRenderer=(()=>{
   const money=v=>FinancialEngine.formatCurrencyFull(v);
   const tableMoney=v=>FinancialEngine.formatMoney(v);
   const compactMoney=v=>FinancialEngine.formatCurrencyCompact(v);
-  const currency=()=>activeCurrency;
-  const labelWithCurrency=s=>String(s).replaceAll('THB', activeCurrency).replaceAll('BRL', activeCurrency).replaceAll('RUB', activeCurrency).replaceAll('₽', activeCurrency);
+  const currency=()=>Localization.getLanguage()==='fa-IR'?'تومان':'Toman';
+  const labelWithCurrency=s=>String(s).replaceAll('THB',currency()).replaceAll('BRL',currency()).replaceAll('RUB',currency()).replaceAll('₽',currency()).replaceAll('IRT',currency()).replaceAll('Toman',currency());
   const pct=v=>FinancialEngine.formatPercent(v);
   const esc=s=>String(s??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('\"','&quot;');
   let tooltipSeq=0;
@@ -72,17 +72,19 @@ const UIRenderer=(()=>{
     const cities=Array.isArray(window.CityData)?window.CityData:[];
     const city=cities.find(x=>x.id===state.selectedCityId)||state.selectedCitySnapshot||null;
     const fmtNum=v=>Math.round(Number(v)||0).toLocaleString(Localization.numberLocale());
-    const cityName=city?`${esc(city.city)}, ${esc(city.state)}`:'—';
+    const cityDisplay=city?(Localization.getLanguage()==='fa-IR'?(city.cityFa||city.city):city.city):'';
+    const stateDisplay=city?(Localization.getLanguage()==='fa-IR'?(city.stateFa||city.state):city.state):'';
+    const cityName=city?`${esc(cityDisplay)}, ${esc(stateDisplay)}`:'—';
     const cityPopulation=city?fmtNum(city.population):fmtNum(model.assumptions?.population||0);
     const cityInitialPayment=city?money(city.initialPayment):money(model.assumptions?.initialInvestment||0);
     const avgSub=`${Localization.t('averageMonthlyInvestment')}: ${compactMoney((model.summary.totalMarketingInvestment||0)/12)}`;
-    const monthlyBreakEven=model.summary.breakEvenPeriod?Localization.t('monthlyBreakEvenValue',{n:Math.round(Number(model.summary.breakEvenPeriod))}):Localization.t('notAchieved12');
+    const monthlyBreakEven=model.summary.breakEvenPeriod?Localization.t('monthlyBreakEvenValue',{n:Localization.localizeDigits(Math.round(Number(model.summary.breakEvenPeriod)))}):Localization.t('notAchieved12');
     const cityCard=`<article class="kpi-card city-context-card"><div class="kpi-icon">${icon('city')}</div><div class="city-context-content"><div class="kpi-label">${Localization.t('selectedCity')}</div><div class="city-context-name">${cityName}</div><div class="city-context-meta"><span><strong>${Localization.t('populationHeader')}:</strong> ${cityPopulation} · <strong>${Localization.t('initialPaymentHeader')}:</strong> ${cityInitialPayment}</span></div></div></article>`;
     const items=[
       {k:'initialInvestment',color:'yellow',icon:icon('briefcase'),val:model.summary.totalInvestment,sub:avgSub,fmt:v=>compactMoney(v)},
       {k:'breakEven',color:'green',icon:icon('target'),val:model.summary.paybackPeriod||0,sub:`${Localization.t('monthlyEquilibrium')}: ${monthlyBreakEven}`,fmt:v=>`${model.summary.paybackPeriod?Localization.formatMonthDuration(v):Localization.t('notAchieved12')}`},
       {k:'yearProfit',color:'blue',icon:icon('profit'),val:model.summary.netProfit,fmt:v=>compactMoney(v)},
-      {k:'roi12',label:'kpiMargin',color:'purple',icon:icon('roi'),val:model.summary.roi,fmt:v=>`${Math.round(v)} %`}
+      {k:'roi12',label:'kpiMargin',color:'purple',icon:icon('roi'),val:model.summary.roi,fmt:v=>Localization.localizeDigits(`${Math.round(v)} %`)}
     ];
     grid.innerHTML=cityCard+items.map(i=>`<article class="kpi-card ${i.color} kpi-${i.k}"><div class="kpi-icon">${i.icon}</div><div><div class="kpi-label">${Localization.t(i.label||i.k)}${i.tooltip?infoTooltip(i.tooltip,'kpi-title-tooltip'):''}</div><div class="kpi-value" id="kpi-${i.k}"></div>${i.sub?`<div class="kpi-sub">${i.sub}</div>`:''}</div></article>`).join('');
     items.forEach(i=>Animation.animateNumber(document.getElementById('kpi-'+i.k),i.k,i.val,i.fmt));
@@ -117,7 +119,7 @@ const UIRenderer=(()=>{
     const rows=[['totalInvestment',model.summary.totalInvestment,'currency'],['totalPartnerRevenue',model.summary.totalRevenue,'currency'],['summaryOperatingExpenses',model.summary.totalOperatingExpenses,'currency'],['netProfit',model.summary.netProfit,'currency'],['roi12',model.summary.roi,'%'],['paybackPeriod',model.summary.paybackPeriod?Localization.formatMonthDuration(model.summary.paybackPeriod):Localization.t('notAchieved12'),'']];
     document.getElementById('summaryList').innerHTML=rows.map(r=>{
       const cls=r[0]==='summaryOperatingExpenses'?'summary-expense-row':(r[0]==='totalInvestment'?'summary-investment-row':'');
-      const value=typeof r[1]==='number'?(r[2]==='%'?Math.round(r[1])+' %':money(r[1])):r[1];
+      const value=typeof r[1]==='number'?(r[2]==='%'?Localization.localizeDigits(Math.round(r[1])+' %'):money(r[1])):r[1];
       return `<div class="summary-row ${cls}"><span>${Localization.t(r[0])}</span><span>${value}</span></div>`;
     }).join('');
   }
@@ -179,11 +181,11 @@ const UIRenderer=(()=>{
     if(s.netProfit<0){
       rows.push({icon:'coin',tone:'danger',title:'negativeResult',text:'negativeResultText',vars:{profit:compactMoney(s.netProfit)}});
     }else if(s.roi<20){
-      rows.push({icon:'coin',tone:'warning',title:'lowProfitability',text:'lowProfitabilityText',vars:{profit:compactMoney(s.netProfit),roi:Math.round(s.roi)+' %'}});
+      rows.push({icon:'coin',tone:'warning',title:'lowProfitability',text:'lowProfitabilityText',vars:{profit:compactMoney(s.netProfit),roi:Localization.localizeDigits(Math.round(s.roi)+' %')}});
     }else if(s.roi<60){
-      rows.push({icon:'coin',tone:'info',title:'moderateProfitability',text:'moderateProfitabilityText',vars:{profit:compactMoney(s.netProfit),roi:Math.round(s.roi)+' %'}});
+      rows.push({icon:'coin',tone:'info',title:'moderateProfitability',text:'moderateProfitabilityText',vars:{profit:compactMoney(s.netProfit),roi:Localization.localizeDigits(Math.round(s.roi)+' %')}});
     }else{
-      rows.push({icon:'coin',tone:'success',title:'highProfitability',text:'profitText',vars:{profit:compactMoney(s.netProfit),roi:Math.round(s.roi)+' %'}});
+      rows.push({icon:'coin',tone:'success',title:'highProfitability',text:'profitText',vars:{profit:compactMoney(s.netProfit),roi:Localization.localizeDigits(Math.round(s.roi)+' %')}});
     }
 
     if(s.paybackPeriod&&s.paybackPeriod<=6){
@@ -218,7 +220,7 @@ const UIRenderer=(()=>{
     const panel=document.getElementById('validationPanel');
     if(!gridEl){return}
     const normalized=FinancialEngine.normalizeAssumptions(state.activeScenario.assumptions);state.activeScenario.assumptions=normalized;
-    const currencyHtml=`<div class="input-row fixed-currency-row"><label>${Localization.t('currency')}</label><strong>IRT</strong></div>`;
+    const currencyHtml=`<div class="input-row fixed-currency-row"><label>${Localization.t('currency')}</label><strong>${currency()}</strong></div>`;
     const formHtml=basic.map(k=>`<div class="input-row ${errors[k]?'invalid':''}"><label for="input-${k}">${labelWithCurrency(inputLabel(k))}</label><input id="input-${k}" data-input="${k}" type="number" step="${['commission','percentagePopulationUsingService'].includes(k)?'0.01':'1'}" value="${normalized[k]}"></div>`).join('');
     const presetManager=`<div class="preset-manager"><div class="preset-row"><label>${Localization.t('marketingDistributionPreset')}</label><select data-preset="marketing"><option value="balanced" ${normalized.marketingDistributionPreset==='balanced'?'selected':''}>${Localization.t('balancedPreset')}</option><option value="launchHeavy" ${normalized.marketingDistributionPreset==='launchHeavy'?'selected':''}>${Localization.t('launchHeavyPreset')}</option><option value="growth" ${normalized.marketingDistributionPreset==='growth'?'selected':''}>${Localization.t('growthPreset')}</option><option value="manual" ${normalized.marketingDistributionPreset==='manual'?'selected':''}>${Localization.t('manualPreset')}</option></select></div><div class="preset-row"><label>${Localization.t('ridesDistributionPreset')}</label><select data-preset="rides"><option value="balanced" ${normalized.ridesDistributionPreset==='balanced'?'selected':''}>${Localization.t('balancedPreset')}</option><option value="slow" ${normalized.ridesDistributionPreset==='slow'?'selected':''}>${Localization.t('slowGrowthPreset')}</option><option value="aggressive" ${normalized.ridesDistributionPreset==='aggressive'?'selected':''}>${Localization.t('fastGrowthPreset')}</option><option value="manual" ${normalized.ridesDistributionPreset==='manual'?'selected':''}>${Localization.t('manualPreset')}</option></select></div><div class="preset-hint">${Localization.t('presetHint')}</div></div>`;
     const expenseRows=(normalized.expenseRows||[]).filter(r=>!r.hidden&&r.id!=='other_costs').map(r=>{

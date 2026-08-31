@@ -4,7 +4,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
-<title>Maxim Franchise Investment Calculator — Iran</title>
+<title>ماشین‌حساب سرمایه‌گذاری فرانشیز ماکسیم — ایران</title>
 <link href="styles.css" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 </head>
@@ -39,9 +39,9 @@
 </svg>
 <span class="top-action-label" data-i18n="changeCity">تغییر شهر</span>
 </button>
-<a aria-label="ورود به کانال Bale" class="btn icon-btn top-action-btn top-action-bale" data-i18n-aria="contactInBale" href="http://ble.ir/maxim_franchise" id="baleChannelBtn" rel="noopener noreferrer" target="_blank" title="Bale">
+<a aria-label="ورود به کانال بله" class="btn icon-btn top-action-btn top-action-bale" data-i18n-aria="contactInBale" href="http://ble.ir/maxim_franchise" id="baleChannelBtn" rel="noopener noreferrer" target="_blank" title="Bale">
 <svg aria-hidden="true" viewbox="0 0 24 24"><path d="M5 5.5h14v10H9l-4 3v-13Z"></path><path d="M8 9h8M8 12h5"></path></svg>
-<span class="top-action-label">Bale</span>
+<span class="top-action-label" data-i18n="baleName">بله</span>
 </a>
 </div>
 </div>
@@ -60,7 +60,7 @@
 <img alt="Maxim" class="start-logo" src="assets/maxim-logo.svg"/>
 <div class="start-copy-text">
 <h1 data-i18n="welcomeTitle">شهر را برای محاسبه سرمایه‌گذاری انتخاب کنید</h1>
-<p data-i18n="welcomeSubtitle">استان و شهر را انتخاب کنید. جمعیت و حق ورود فرانشیز به‌صورت خودکار درج می‌شود.</p>
+<p data-i18n="welcomeSubtitle">استان و شهر را انتخاب کنید. جمعیت و هزینه خرید حق امتیاز به‌صورت خودکار درج می‌شود.</p>
 </div>
 </div>
 </div>
@@ -154,7 +154,7 @@
 </select>
 </label>
 <div class="mobile-start-title" data-i18n="welcomeTitle">شهر را برای محاسبه سرمایه‌گذاری انتخاب کنید</div>
-<div class="mobile-start-subtitle" data-i18n="welcomeSubtitle">استان و شهر را انتخاب کنید. جمعیت و حق ورود فرانشیز به‌صورت خودکار درج می‌شود.</div>
+<div class="mobile-start-subtitle" data-i18n="welcomeSubtitle">استان و شهر را انتخاب کنید. جمعیت و هزینه خرید حق امتیاز به‌صورت خودکار درج می‌شود.</div>
 <div class="mobile-city-fields">
 <div class="mobile-field">
 <label data-i18n="state" for="mobileStateSelect">استان</label>
@@ -251,8 +251,8 @@
 </div>
 <div class="mobile-info-panel mobile-final-cta-panel final-cta-section">
 <h2 id="mobileFinalCtaTitle">می‌خواهید محاسبه را با کارشناس بررسی کنید؟</h2>
-<p class="mobile-presentation-text" id="mobileFinalCtaText">برای بررسی شرایط و برنامه راه‌اندازی با ما در Bale در ارتباط باشید.</p>
-<a aria-label="Open Bale" class="mobile-whatsapp-cta mobile-bale-cta" href="http://ble.ir/maxim_franchise" id="mobileWhatsAppCta" rel="noopener noreferrer" target="_blank"><span class="bale-cta-label">Bale</span></a>
+<p class="mobile-presentation-text" id="mobileFinalCtaText">برای بررسی شرایط و برنامه راه‌اندازی با ما در بله در ارتباط باشید.</p>
+<a aria-label="Open Bale" class="mobile-whatsapp-cta mobile-bale-cta" href="http://ble.ir/maxim_franchise" id="mobileWhatsAppCta" rel="noopener noreferrer" target="_blank"><span class="bale-cta-label" data-i18n="baleName">بله</span></a>
 <p class="mobile-disclaimer" id="mobileDisclaimer">این محاسبه تقریبی است و پیشنهاد عمومی یا تضمین سود محسوب نمی‌شود.</p>
 </div>
 </div>
@@ -279,14 +279,14 @@
 <label class="parameters-field" for="annualInvestmentBudgetInput">
 <span data-i18n="annualDirectInvestmentBudget">بودجه سالانه تبلیغات (۱۲ ماه مساوی)</span>
 <small class="parameters-short-hint" data-i18n="advertisingParameterShortHint">سرمایه‌گذاری تبلیغاتی برای ۱۲ ماه. بودجه بر جذب کاربران و تعداد سفارش‌ها اثر می‌گذارد.</small>
-<div class="parameters-input-affix"><span>IRT</span><input autocomplete="off" id="annualInvestmentBudgetInput" inputmode="numeric" type="text"/></div>
+<div class="parameters-input-affix"><span data-i18n="brl">تومان</span><input autocomplete="off" id="annualInvestmentBudgetInput" inputmode="numeric" type="text"/></div>
 <div aria-live="polite" class="parameter-assessment is-recommended" id="investmentBudgetAssessment" role="status"></div>
 </label>
 <div aria-label="پارامترهای اقتصادی سفر" class="parameters-compact-pair" data-i18n-aria="economicTripParameters" role="group">
 <label class="parameters-field parameters-field-compact" for="averageFareParameterInput">
 <span data-i18n="averageFareParameter">میانگین مبلغ سفر</span>
 <small class="parameters-short-hint" data-i18n="fareParameterShortHint">میانگین مبلغ یک سفر انجام‌شده برای مشتری.</small>
-<div class="parameters-input-affix"><span>IRT</span><input autocomplete="off" id="averageFareParameterInput" inputmode="numeric" type="text"/></div>
+<div class="parameters-input-affix"><span data-i18n="brl">تومان</span><input autocomplete="off" id="averageFareParameterInput" inputmode="numeric" type="text"/></div>
 <div aria-live="polite" class="parameter-assessment is-recommended" id="averageFareAssessment" role="status"></div>
 </label>
 <label class="parameters-field parameters-field-compact" for="driverCommissionParameterInput">
@@ -358,7 +358,7 @@
 </div>
 <div class="admin-fee-rules-table-wrap">
 <table class="admin-fee-rules-table">
-<thead><tr><th>Population from</th><th>Range</th><th>Franchise fee, IRT</th><th>Records</th><th></th></tr></thead>
+<thead><tr><th>Population from</th><th>Range</th><th>Franchise fee, Toman</th><th>Records</th><th></th></tr></thead>
 <tbody id="adminFeeRulesBody"></tbody>
 </table>
 </div>
@@ -378,7 +378,7 @@
 <label><span>Province</span><input autocomplete="address-level1" id="adminNewCityState" placeholder="For example, Tehran Province" type="text"/></label>
 <label><span>City</span><input autocomplete="address-level2" id="adminNewCityName" placeholder="Name" type="text"/></label>
 <label><span>Population</span><input id="adminNewCityPopulation" inputmode="numeric" min="1" placeholder="100000" step="1" type="number"/></label>
-<label><span>Franchise fee, IRT</span><input id="adminNewCityPayment" inputmode="numeric" min="0" placeholder="By rule" step="1000" type="number"/><small class="admin-field-hint" id="adminNewCityPaymentHint">Leave empty for automatic calculation.</small></label>
+<label><span>Franchise fee, Toman</span><input id="adminNewCityPayment" inputmode="numeric" min="0" placeholder="By rule" step="1000" type="number"/><small class="admin-field-hint" id="adminNewCityPaymentHint">Leave empty for automatic calculation.</small></label>
 <button class="btn primary admin-add-city-button" id="adminAddCitySubmit" type="button">Add</button>
 </div>
 </section>
